@@ -2,6 +2,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.events.AbstractWebDriverEventListener;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.interactions.Action;
@@ -11,25 +12,29 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import java.io.File;
 import java.io.IOException;
-
+import org.openqa.selenium.support.events.EventFiringWebDriver;
 
 import static org.openqa.selenium.Keys.chord;
 
-public class PrestoShop {
+public class PrestoShop extends AbstractWebDriverEventListener {
     public static Logger log = LoggerFactory.getLogger(PrestoShop.class);
 
     static int countScreen = 0;
-    static WebDriver driver;
+    static EventFiringWebDriver driver;
     static Actions builder;
+
+
     public static void main(String[] args) throws IOException, InterruptedException {
         System.setProperty("webdriver.chrome.driver","E:\\hachik NE TROGAT\\test\\selenium drivera" +
                 "\\ChromeDriver\\chromedriver_win32 last\\chromedriver.exe");
 
 
         log.info("creat driver");
-        driver = new ChromeDriver();
+        driver = new EventFiringWebDriver( new ChromeDriver());
+        driver.register(new PrestoShop());
         String urlPrestoShop = "http://prestashop.qatestlab.com.ua/en/";
         driver.get(urlPrestoShop);
+
 
         Thread.sleep(3000);
 
@@ -245,6 +250,22 @@ public class PrestoShop {
         FileUtils.copyFile(screen,new File("E:\\hachik NE TROGAT\\test\\prog\\newscrCount"+countScreen+".png" ));
         countScreen++;
     }
+
+    @Override
+    public void beforeNavigateTo(String url, WebDriver driver) {
+        log.info("nivigate to "+url);
+    }
+
+    @Override
+    public void beforeFindBy(By by, WebElement element, WebDriver driver) {
+        log.info("find element "+ by);
+    }
+
+    @Override
+    public void beforeClickOn(WebElement element, WebDriver driver) {
+        log.info("click on "+element.getTagName());
+    }
+
 
 //метод наведения на окно с товаром
    /* public static void choiceWindiwGoods(String a){
